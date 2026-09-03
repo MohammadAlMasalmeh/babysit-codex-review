@@ -22,7 +22,9 @@ commit cleanly.
   Reproduce or verify each finding before changing code. If a finding is
   incorrect, reply with concise evidence instead of changing correct code.
 - Address only Codex feedback unless the user expands the scope.
-- Stop after five review rounds and summarize any unresolved cycle.
+- Keep looping until Codex reports the latest PR head clean. There is no
+  round limit. Stop only when Codex is clean, the PR is no longer open, Codex
+  reports it cannot review, or the user tells you to stop.
 
 ## Run the loop
 
@@ -65,7 +67,8 @@ Run all commands from the pull request's working tree.
      including its path, line, body, URL, and reviewed commit. Continue below.
    - Exit `3`, `status: timeout`: if this was the first `--no-request` wait,
      request the review once as described above. If an explicit request timed
-     out, report it and stop rather than posting duplicates.
+     out, post `@codex review` again and keep waiting. Do not end the loop
+     because one wait expired.
    - Exit `4`, `status: head_changed` or `error`: resolve the stated condition
      before deciding whether a new review request is appropriate.
 
@@ -91,10 +94,11 @@ Run all commands from the pull request's working tree.
    For a rejected finding, reply with the concrete evidence showing why no code
    change is needed.
 
-7. Return to step 2. A clean response for an earlier commit does not finish the
-   loop. Stop only when Codex's clean response names the latest PR head, or when
-   the helper observes Codex's thumbs-up on that review request while the head
-   remains unchanged.
+7. After the first automatic review, skip the `--no-request` wait. Request a
+   new review, wait, and fix again. A clean response for an earlier commit
+   does not finish the loop. Stop only when Codex's clean response names the
+   latest PR head, or when the helper observes Codex's thumbs-up on that
+   review request while the head remains unchanged.
 
 ## Completion report
 
