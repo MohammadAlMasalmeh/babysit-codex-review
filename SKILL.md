@@ -22,9 +22,15 @@ commit cleanly.
   Reproduce or verify each finding before changing code. If a finding is
   incorrect, reply with concise evidence instead of changing correct code.
 - Address only Codex feedback unless the user expands the scope.
-- Keep looping until Codex reports the latest PR head clean. There is no
-  round limit. Stop only when Codex is clean, the PR is no longer open, Codex
-  reports it cannot review, or the user tells you to stop.
+- Count one round each time Codex returns a completed review for the current
+  head (findings or clean). A timeout that you retry does not increment the
+  count.
+- After round 3, if Codex is still not clean, pause and ask whether to
+  continue. If the user continues, run rounds 4 and 5 without asking again.
+- After round 5, if Codex is still not clean, pause and ask again. If the
+  user continues, keep looping with no further confirmation.
+- Stop immediately if Codex is clean, the PR is no longer open, Codex reports
+  it cannot review, or the user chooses to stop.
 
 ## Run the loop
 
@@ -99,6 +105,33 @@ Run all commands from the pull request's working tree.
    does not finish the loop. Stop only when Codex's clean response names the
    latest PR head, or when the helper observes Codex's thumbs-up on that
    review request while the head remains unchanged.
+
+## Continue confirmation
+
+Ask only at these two points, and only when the latest Codex result still has
+findings:
+
+- after round 3, before starting round 4
+- after round 5, before starting round 6
+
+Use the structured multiple-choice question tool when it is available
+(`AskQuestion`). If that tool is not available, ask the same two options in
+plain text and wait.
+
+After 3 unfinished rounds:
+
+- Prompt: `Codex still has findings after 3 review rounds. Keep going through
+  round 5?`
+- Options: `Keep going through round 5` / `Stop here`
+
+After 5 unfinished rounds:
+
+- Prompt: `Codex still has findings after 5 review rounds. Keep going with no
+  further asks?`
+- Options: `Keep going, no more asks` / `Stop here`
+
+If the user chooses to stop, summarize the remaining findings and exit. Do
+not ask again after a continue at round 5.
 
 ## Completion report
 

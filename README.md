@@ -4,7 +4,9 @@ An [Agent Skill](https://agentskills.io) that requests OpenAI Codex reviews on
 GitHub pull requests, waits for the response, fixes valid findings, and repeats
 until Codex reviews the latest commit cleanly.
 
-After install, invoke `/babysit-codex-review`.
+After install, invoke `/babysit-codex-review`. The loop asks whether to
+continue after 3 unfinished rounds, asks again after 5, and then runs until
+Codex is clean if you confirm.
 
 ## Download / install
 
